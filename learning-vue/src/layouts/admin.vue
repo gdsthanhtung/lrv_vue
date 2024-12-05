@@ -9,6 +9,7 @@
                     <template #header>
                         <div>Menu</div>
                     </template>
+                    <template #footer></template>
                 </a-list>
             </div>
             <div class="col-12 col-sm-9">

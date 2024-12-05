@@ -4,34 +4,30 @@
       v-model:selectedKeys="selectedKeys"
       mode="inline"
     >
-        <a-menu-item key="admin-users">
-            <router-link :to="{ name: 'admin-users' }"><span>Users</span></router-link>
+        <a-menu-item key="admin-users">            
+            <router-link :to="{ name: 'admin-users' }"><TeamOutlined /> <span>Users</span></router-link>
         </a-menu-item>
         <a-menu-item key="admin-roles">
-            <router-link :to="{ name: 'admin-roles' }"><span>Roles</span></router-link>
+            <router-link :to="{ name: 'admin-roles' }"><TagsOutlined /> <span>Roles</span></router-link>
         </a-menu-item>
         <a-menu-item key="admin-settings">
-            <router-link :to="{ name: 'admin-settings' }"><span>Settings</span></router-link>
+            <router-link :to="{ name: 'admin-settings' }"><SettingOutlined /> <span>Settings</span></router-link>
         </a-menu-item>
     </a-menu>
 </template>
-
-<!-- <script setup>
-    import { reactive, watch, h } from 'vue';
-    const state = reactive({
-        collapsed: false,
-        selectedKeys: ['1'],
-        openKeys: ['sub1'],
-    });
-</script> -->
-
 
 <script>
 	import { defineComponent } from 'vue';
     import { storeToRefs } from 'pinia';
     import { useMenu } from "../stores/use-menu.js";
+    import { TeamOutlined, TagsOutlined, SettingOutlined } from '@ant-design/icons-vue';
 
 	export default defineComponent({
+        components: {
+            TeamOutlined, 
+            TagsOutlined,
+            SettingOutlined
+        },
 		setup() {
             const store = useMenu();
 
