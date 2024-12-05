@@ -4,7 +4,7 @@
     <div class="container-fluid mt-3">
         <div class="row">
             <div class="col-sm-3 d-none d-sm-flex">
-                <a-list bordered :data-source="menuData" style="width: 100%;">
+                <a-list bordered style="width: 100%;">
                     <TheMenu />
                     <template #header>
                         <div>Menu</div>

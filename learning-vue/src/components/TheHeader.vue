@@ -20,14 +20,8 @@
     </div>
   </div>
 
-  <a-drawer
-    v-model:open="openMenu"
-    title="MENU"
-    placement="left"
-  >
-    <p>Some contents...</p>
-    <p>Some contents...</p>
-    <p>Some contents...</p>
+  <a-drawer v-model:open="openMenu" title="MENU" placement="left"> 
+	<TheMenu />
   </a-drawer>
 
   <a-drawer
@@ -41,16 +35,29 @@
   </a-drawer>
 </template>
 
-<script setup>
-	import { ref } from 'vue';
-	const openMenu = ref(false);
-	const openUser = ref(false);
-	
-	const showDrawerMenu = () => {
-		openMenu.value = true;
-	};
+<script>
+    import TheMenu from "../components/TheMenu.vue";
+	import { defineComponent, ref } from 'vue';
 
-	const showDrawerUser = () => {
-		openUser.value = true;
-	};
+	export default defineComponent({
+		components: {
+			TheMenu
+		},
+		setup() {
+			const openMenu = ref(false);
+			const openUser = ref(false);
+			
+			const showDrawerMenu = () => {
+				openMenu.value = true;
+			};
+
+			const showDrawerUser = () => {
+				openUser.value = true;
+			};
+
+			return {
+				openMenu, openUser, showDrawerMenu, showDrawerUser
+			}
+		}
+	})
 </script>

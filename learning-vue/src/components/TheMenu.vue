@@ -1,10 +1,8 @@
 <template>        
     <a-menu
-      v-model:openKeys="state.openKeys"
-      v-model:selectedKeys="state.selectedKeys"
+      v-model:openKeys="openKeys"
+      v-model:selectedKeys="selectedKeys"
       mode="inline"
-      :inline-collapsed="state.collapsed"
-      :items="items"
     >
         <a-menu-item key="admin-users">
             <router-link :to="{ name: 'admin-users' }"><span>Users</span></router-link>
@@ -18,11 +16,28 @@
     </a-menu>
 </template>
 
-<script setup>
+<!-- <script setup>
     import { reactive, watch, h } from 'vue';
     const state = reactive({
         collapsed: false,
         selectedKeys: ['1'],
         openKeys: ['sub1'],
     });
+</script> -->
+
+
+<script>
+	import { defineComponent } from 'vue';
+    import { storeToRefs } from 'pinia';
+    import { useMenu } from "../stores/use-menu.js";
+
+	export default defineComponent({
+		setup() {
+            const store = useMenu();
+
+			return {
+                ...storeToRefs(store)
+			}
+		}
+	})
 </script>
