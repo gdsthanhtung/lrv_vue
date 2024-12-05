@@ -1,0 +1,28 @@
+<template>        
+    <a-menu
+      v-model:openKeys="state.openKeys"
+      v-model:selectedKeys="state.selectedKeys"
+      mode="inline"
+      :inline-collapsed="state.collapsed"
+      :items="items"
+    >
+        <a-menu-item key="admin-users">
+            <router-link :to="{ name: 'admin-users' }"><span>Users</span></router-link>
+        </a-menu-item>
+        <a-menu-item key="admin-roles">
+            <router-link :to="{ name: 'admin-roles' }"><span>Roles</span></router-link>
+        </a-menu-item>
+        <a-menu-item key="admin-settings">
+            <router-link :to="{ name: 'admin-settings' }"><span>Settings</span></router-link>
+        </a-menu-item>
+    </a-menu>
+</template>
+
+<script setup>
+    import { reactive, watch, h } from 'vue';
+    const state = reactive({
+        collapsed: false,
+        selectedKeys: ['1'],
+        openKeys: ['sub1'],
+    });
+</script>

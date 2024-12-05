@@ -1,0 +1,3 @@
+<template>
+    Pages-settings
+</template>
