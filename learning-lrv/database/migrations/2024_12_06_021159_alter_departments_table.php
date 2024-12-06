@@ -11,11 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->unsignedBigInteger('department_id')->after('chage_password_at')->nullable();;
-            $table->unsignedBigInteger('status_id')->after('department_id');
+        Schema::table('departments', function (Blueprint $table) {
             $table->foreign('status_id')->references('id')->on('enumerations');
-            $table->foreign('department_id')->references('id')->on('departments');
+            $table->foreign('created_by')->references('id')->on('users');
+            $table->foreign('updated_by')->references('id')->on('users');
         });
     }
 

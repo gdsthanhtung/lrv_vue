@@ -18,9 +18,21 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
+        'avatar',
+        'username',
         'name',
         'email',
+        'email_verified_at',
         'password',
+        'remember_token',
+        'login_at',
+        'chage_password_at',
+        'department_id',
+        'status',
+        'created_by',
+        'updated_by',
+        'created_at',
+        'updated_at',
     ];
 
     /**
@@ -42,4 +54,25 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    /* RELATIONSHIP */
+    public function createdBy()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function updatedBy()
+    {
+        return $this->belongsTo(User::class, 'updated_by');
+    }
+
+    public function department()
+    {
+        return $this->belongsTo(Department::class, 'department_id');
+    }
+
+    public function status()
+    {
+        return $this->belongsTo(Enumeration::class, 'status_id');
+    }
 }

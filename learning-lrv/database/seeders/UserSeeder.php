@@ -20,7 +20,22 @@ class UserSeeder extends Seeder
             'name' => 'admin',
             'email' => 'admin@gmail.com',
             'password' => Hash::make('123123'),
-            'status' => '1',
+            'status_id' => 1,
+            //'department_id' => 1,
+            'created_by' => 1,
+            'updated_by' => 1,
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
+
+        DB::table('users')->insert([
+            'avatar' => 'default/user-avatar.jpg',
+            'username' => 'gradeus',
+            'name' => 'gds.gradeus',
+            'email' => 'gds.gradeus@gmail.com',
+            'password' => Hash::make('123123'),
+            'status_id' => 1,
+            //'department_id' => 2,
             'created_by' => 1,
             'updated_by' => 1,
             'created_at' => now(),

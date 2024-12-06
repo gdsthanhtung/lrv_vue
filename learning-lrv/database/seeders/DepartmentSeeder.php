@@ -15,7 +15,7 @@ class DepartmentSeeder extends Seeder
     {
         DB::table('departments')->insert([
             'name' => 'BOM',
-            'status' => '1',
+            'status_id' => '1',
             'created_by' => 1,
             'updated_by' => 1,
             'created_at' => now(),
@@ -24,7 +24,7 @@ class DepartmentSeeder extends Seeder
 
         DB::table('departments')->insert([
             'name' => 'HR',
-            'status' => '1',
+            'status_id' => '1',
             'created_by' => 1,
             'updated_by' => 1,
             'created_at' => now(),
@@ -33,7 +33,7 @@ class DepartmentSeeder extends Seeder
 
         DB::table('departments')->insert([
             'name' => 'IT',
-            'status' => '1',
+            'status_id' => '1',
             'created_by' => 1,
             'updated_by' => 1,
             'created_at' => now(),
