@@ -1,5 +1,13 @@
 <template>
     <a-card title="Users list" style="width: 100%;">
+        <div class="row mb-3">
+            <div class="col-12 d-flex justify-content-end">
+                <a-button type="primary">
+                    <router-link :to="{ name: 'admin-users-create' }"><PlusOutlined /></router-link>
+                </a-button>
+            </div>
+        </div>
+
         <div class="row">
             <div class="col-12">
                 <a-table :dataSource="dataSource" :columns="columns" :scroll="{ x: 576 }">
@@ -22,8 +30,12 @@
 <script>
 import { defineComponent, ref } from "vue";
 import { useMenu } from "../../../stores/use-menu.js";
+import { PlusOutlined } from '@ant-design/icons-vue';
 
 export default defineComponent({
+    components: {
+        PlusOutlined //icon
+    },
     setup() {
         useMenu().onSelectedKeys(['admin-users']);
 

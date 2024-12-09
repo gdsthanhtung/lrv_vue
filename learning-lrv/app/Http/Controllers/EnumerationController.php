@@ -2,25 +2,23 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
+use App\Models\Enumeration;
 use Illuminate\Http\Request;
 
-class UserController extends Controller
+class EnumerationController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        return User::with([
-            'status' => function($query){
-                $query->select('id', 'refTable', 'value');
-                $query->where('refTable', 'users');
-            },
-            'department:id,name',
-            'createdBy:id,name',
-            'updatedBy:id,name'
-        ])->get();
+        return Enumeration::query()
+            ->when((request('for') == 'selectbox'), function ($q) {
+                $q->select('id as value', 'value as label', 'refTable');
+                $q->where('refTable', '=', request('refTable', 'common'));
+            }, function ($q) {
+                //$q->where('refTable', '=', request('refTable'));
+            })->orderBy('value', request('sortBy', 'asc'))->get();
     }
 
     /**
@@ -28,7 +26,7 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        return $request->all();
+        //
     }
 
     /**
@@ -36,7 +34,7 @@ class UserController extends Controller
      */
     public function show(string $id)
     {
-        return User::findOrFail($id);
+        //
     }
 
     /**

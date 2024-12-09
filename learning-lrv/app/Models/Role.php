@@ -5,9 +5,18 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Enumeration extends Model
+class Role extends Model
 {
     use HasFactory;
+
+    protected $fillable = [
+        'name',
+        'status_id',
+        'created_by',
+        'updated_by',
+        'created_at',
+        'updated_at',
+    ];
 
     /* RELATIONSHIP */
     public function createdBy()

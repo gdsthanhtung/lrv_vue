@@ -28,7 +28,7 @@ class User extends Authenticatable
         'login_at',
         'chage_password_at',
         'department_id',
-        'status',
+        'status_id',
         'created_by',
         'updated_by',
         'created_at',
