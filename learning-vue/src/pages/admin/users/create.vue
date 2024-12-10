@@ -27,7 +27,7 @@
                         <div class="col-12 col-sm-3 text-start text-sm-end">
                             <label>
                                 <span class="text-danger me-1">*</span>
-                                <span>Status:</span>
+                                <span :class="{'text-danger': errors.status_id}">Status:</span>
                             </label>
                         </div>
                         <div class="col-12 col-sm-5">
@@ -38,7 +38,9 @@
                                 style="width: 100%"
                                 :options="optionsStatuses"
                                 :filter-option="filterOption"
+                                :class="{'el-danger': errors.status_id}"
                             ></a-select>
+                            <small v-if="errors.status_id" class="text-danger">* {{ errors.status_id[0] }}</small>
                         </div>
                     </div>
 
@@ -46,14 +48,16 @@
                         <div class="col-12 col-sm-3 text-start text-sm-end">
                             <label>
                                 <span class="text-danger me-1">*</span>
-                                <span>Username:</span>
+                                <span :class="{'text-danger': errors.username}">Username:</span>
                             </label>
                         </div>
                         <div class="col-12 col-sm-5">
                             <a-input 
                                 v-model:value="username" 
                                 placeholder="Enter username..." 
+                                :class="{'el-danger': errors.username}"
                                 allow-clear/>
+                            <small v-if="errors.username" class="text-danger">* {{ errors.username[0] }}</small>
                         </div>
                     </div>
                     
@@ -61,14 +65,16 @@
                         <div class="col-12 col-sm-3 text-start text-sm-end">
                             <label>
                                 <span class="text-danger me-1">*</span>
-                                <span>Fullname:</span>
+                                <span :class="{'text-danger': errors.name}">Name:</span>
                             </label>
                         </div>
                         <div class="col-12 col-sm-5">
                             <a-input 
-                                v-model:value="fullname" 
-                                placeholder="Enter fullname..." 
+                                v-model:value="name" 
+                                placeholder="Enter name..." 
+                                :class="{'el-danger': errors.name}"
                                 allow-clear/>
+                            <small v-if="errors.name" class="text-danger">* {{ errors.name[0] }}</small>
                         </div>
                     </div>
                     
@@ -76,14 +82,16 @@
                         <div class="col-12 col-sm-3 text-start text-sm-end">
                             <label>
                                 <span class="text-danger me-1">*</span>
-                                <span>Email:</span>
+                                <span :class="{'text-danger': errors.email}">Email:</span>
                             </label>
                         </div>
                         <div class="col-12 col-sm-5">
                             <a-input 
                                 v-model:value="email" 
                                 placeholder="Enter email..." 
+                                :class="{'el-danger': errors.email}"
                                 allow-clear/>
+                            <small v-if="errors.email" class="text-danger">* {{ errors.email[0] }}</small>
                         </div>
                     </div>
                     
@@ -91,7 +99,7 @@
                         <div class="col-12 col-sm-3 text-start text-sm-end">
                             <label>
                                 <span class="text-danger me-1">*</span>
-                                <span>Department:</span>
+                                <span :class="{'text-danger': errors.department_id}">Department:</span>
                             </label>
                         </div>
                         <div class="col-12 col-sm-5">
@@ -102,7 +110,9 @@
                                 style="width: 100%"
                                 :options="optionsDepartments"
                                 :filter-option="filterOption"
+                                :class="{'el-danger': errors.department_id}"
                             ></a-select>
+                            <small v-if="errors.department_id" class="text-danger">* {{ errors.department_id[0] }}</small>
                         </div>
                     </div>
                     
@@ -110,11 +120,16 @@
                         <div class="col-12 col-sm-3 text-start text-sm-end">
                             <label>
                                 <span class="text-danger me-1">*</span>
-                                <span>Password:</span>
+                                <span :class="{'text-danger': errors.password}">Password:</span>
                             </label>
                         </div>
                         <div class="col-12 col-sm-5">
-                            <a-input-password v-model:value="password" placeholder="Enter password..." allow-clear />
+                            <a-input-password 
+                                v-model:value="password" 
+                                placeholder="Enter password..." 
+                                :class="{'el-danger': errors.password}"
+                                allow-clear />
+                            <small v-if="errors.password" class="text-danger">* {{ errors.password[0] }}</small>
                         </div>
                     </div>
                     
@@ -122,11 +137,16 @@
                         <div class="col-12 col-sm-3 text-start text-sm-end">
                             <label>
                                 <span class="text-danger me-1">*</span>
-                                <span>Confirm Password:</span>
+                                <span :class="{'text-danger': errors.password_confirmation}">Confirm Password:</span>
                             </label>
                         </div>
                         <div class="col-12 col-sm-5">
-                            <a-input-password v-model:value="password_confirmation" placeholder="Enter confirm password..." allow-clear />
+                            <a-input-password 
+                                v-model:value="password_confirmation" 
+                                placeholder="Enter confirm password..." 
+                                :class="{'el-danger': errors.password_confirmation}"
+                                allow-clear />
+                            <small v-if="errors.password_confirmation" class="text-danger">* {{ errors.password_confirmation[0] }}</small>
                         </div>
                     </div>
                     
@@ -162,8 +182,10 @@
 
 <script>
 import { defineComponent, ref, reactive, toRefs } from "vue";
+import { useRouter } from "vue-router";
 import { useMenu } from "../../../stores/use-menu.js";
 import { UserOutlined, UploadOutlined } from '@ant-design/icons-vue';
+import { message } from 'ant-design-vue';
 
 export default defineComponent({
     components: {
@@ -173,6 +195,9 @@ export default defineComponent({
         // Include left menu
         useMenu().onSelectedKeys(['admin-users']);
 
+        // Use redirect func
+        const router = useRouter();
+
         // Allow filter by uppercase/lowercase in selectbox
         const filterOption = (input, option) => {
             return option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0;
@@ -181,7 +206,7 @@ export default defineComponent({
         // Default value of inputs
         const user = reactive({
             username: "",
-            fullname: "",
+            name: "",
             email: "",
             password: "",
             password_confirmation: "",
@@ -189,6 +214,7 @@ export default defineComponent({
             status_id: [],
             role_id: []
         });
+        const errors = ref([]);
 
         // Default value of selectboxes
         const optionsDepartments = ref([]);
@@ -241,10 +267,14 @@ export default defineComponent({
         const submitForm = () => {
             axios.post('http://127.0.0.1:8000/api/users', user)
                 .then(function (response) {
-                    console.log(response.data);
+                    console.log(response);
+                    if(response) message.success('Request successful execution');
+                    router.push({name: 'admin-users'});
                 })
                 .catch(function (error) {
                     console.log(error);
+                    errors.value = error.response.data.errors;
+                    message.error('Request execution failed');
                 });
         }
 
@@ -255,8 +285,16 @@ export default defineComponent({
             optionsRoles,
             filterOption,
             submitForm,
-            ...toRefs(user)
+            ...toRefs(user),
+            errors
         };
     }
 })
 </script>
+
+<style>
+    .el-danger {
+        border: 1px solid #dc3545;
+        border-radius: 7px;
+    }
+</style>
