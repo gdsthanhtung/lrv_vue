@@ -213,6 +213,7 @@ import { useRouter, useRoute } from "vue-router";
 import { useMenu } from "../../../stores/use-menu.js";
 import { UserOutlined, UploadOutlined } from '@ant-design/icons-vue';
 import { message } from 'ant-design-vue';
+import dayjs from 'dayjs';
 
 export default defineComponent({
     components: {
@@ -302,8 +303,8 @@ export default defineComponent({
                     user.email = u.email;
                     user.department_id = u.department_id;
                     user.status_id = u.status_id;
-                    user.login_at = u.login_at;
-                    user.change_password_at = u.change_password_at;
+                    user.login_at = (u.login_at != null) ? dayjs(u.login_at).format('DD/MM/YYYY H:m') : null;
+                    user.change_password_at = (u.change_password_at != null) ? dayjs(u.change_password_at).format('DD/MM/YYYY H:m') : null;
                     //console.log(response.data);
                     //console.log(user);
                 })
