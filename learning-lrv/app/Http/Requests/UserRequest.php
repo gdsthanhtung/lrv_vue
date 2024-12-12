@@ -34,13 +34,25 @@ class UserRequest extends FormRequest
 
         if (Request::isMethod('post')){
             return [
-                'name' => ['required','between:4,50'],
-                'username' => ['required','between:4,50',Rule::unique($this->table,'username')],
-                'email' => ['required','email',Rule::unique($this->table,'email')],
-                'status_id' => ['required',Rule::in($enumStatus)],
+                'name'          => ['required','between:4,50'],
+                'username'      => ['required','between:4,50',Rule::unique($this->table,'username')],
+                'email'         => ['required','email',Rule::unique($this->table,'email')],
+                'status_id'     => ['required',Rule::in($enumStatus)],
                 'department_id' => ['required',Rule::in($departments)],
-                'password' => ['required','between:6,30','confirmed'],
+                'password'      => ['required','between:6,30','confirmed'],
                 'password_confirmation' => ['required','between:6,30'],
+            ];
+        }
+
+        if (Request::isMethod('put')){
+            return [
+                'name'          => ['required','between:4,50'],
+                'username'      => ['required','between:4,50',Rule::unique($this->table,'username')->ignore($this->id)],
+                'email'         => ['required','email',Rule::unique($this->table,'email')->ignore($this->id)],
+                'status_id'     => ['required',Rule::in($enumStatus)],
+                'department_id' => ['required',Rule::in($departments)],
+                'password'      => ($this->change_password) ? ['required','between:6,30','confirmed'] : [],
+                'password_confirmation' => ($this->change_password) ? ['required','between:6,30'] : [],
             ];
         }
     }

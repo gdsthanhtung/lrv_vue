@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('password');
             $table->rememberToken();
             $table->timestamp('login_at')->nullable();
-            $table->timestamp('chage_password_at')->nullable();
+            $table->timestamp('change_password_at')->nullable();
 
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();

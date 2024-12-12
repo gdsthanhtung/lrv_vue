@@ -1,6 +1,6 @@
 <template>
     <form @submit.prevent="submitForm()">
-        <a-card title="Create User" style="width: 100%;">
+        <a-card title="Edit User" style="width: 100%;">
             <div class="row">
                 <div class="col-12 col-sm-4 mb-3">
                     <div class="row">
@@ -117,6 +117,15 @@
                     </div>
                     
                     <div class="row mb-3">
+                        <div class="col-12 col-sm-3 text-start text-sm-end"></div>
+                        <div class="col-12 col-sm-5">
+                            <a-checkbox v-model:checked="change_password">
+                                Change Password?
+                            </a-checkbox>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3" v-if="change_password == true">
                         <div class="col-12 col-sm-3 text-start text-sm-end">
                             <label>
                                 <span class="text-danger me-1">*</span>
@@ -133,7 +142,7 @@
                         </div>
                     </div>
                     
-                    <div class="row mb-3">
+                    <div class="row mb-3" v-if="change_password == true">
                         <div class="col-12 col-sm-3 text-start text-sm-end">
                             <label>
                                 <span class="text-danger me-1">*</span>
@@ -161,6 +170,24 @@
                             <a-checkbox-group v-model:value="role_id" :options="optionsRoles" />
                         </div>
                     </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-12 col-sm-3 text-start text-sm-end">
+                            <label>
+                                <span>Last login at:</span>
+                            </label>
+                        </div>
+                        <div class="col-12 col-sm-5"><span>{{ (login_at == null) ? 'N/A' : login_at}}</span></div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-12 col-sm-3 text-start text-sm-end">
+                            <label>
+                                <span>Last change password at:</span>
+                            </label>
+                        </div>
+                        <div class="col-12 col-sm-5"><span>{{ (change_password_at == null) ? 'N/A' : change_password_at }}</span></div>
+                    </div>
 
                     
                     <div class="row mb-3">
@@ -182,7 +209,7 @@
 
 <script>
 import { defineComponent, ref, reactive, toRefs } from "vue";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 import { useMenu } from "../../../stores/use-menu.js";
 import { UserOutlined, UploadOutlined } from '@ant-design/icons-vue';
 import { message } from 'ant-design-vue';
@@ -197,13 +224,18 @@ export default defineComponent({
 
         // Use redirect func
         const router = useRouter();
+        const route = useRoute();
 
-        // Allow filter by uppercase/lowercase in selectbox
-        const filterOption = (input, option) => {
-            return option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0;
-        };
+        // Default value of selectboxes
+        const optionsDepartments = ref([]);
+        const optionsRoles = ref([]);
+        const optionsStatuses = ref([]);
 
-        // Default value of inputs
+        // Default value of elements
+        const errors = ref([]);
+        const userId = 0;
+
+        //const changePassword = ref(false);
         const user = reactive({
             username: "",
             name: "",
@@ -212,22 +244,23 @@ export default defineComponent({
             password_confirmation: "",
             department_id: [],
             status_id: [],
-            role_id: []
+            role_id: [],
+            change_password: false,
+            login_at: null,
+            change_password_at: null
         });
-        const errors = ref([]);
 
-        // Default value of selectboxes
-        const optionsDepartments = ref([]);
-        const optionsRoles = ref([]);
-        const optionsStatuses = ref([]);
-
+        // Allow filter by uppercase/lowercase in selectbox
+        const filterOption = (input, option) => {
+            return option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0;
+        };
 
         // Get data from Backend
         const getStatuses = () => {
             axios.get('http://127.0.0.1:8000/api/enumerations?for=selectbox&refTable=users')
                 .then(function (response) {
                     optionsStatuses.value = response.data;
-                    console.log(response.data);
+                    //console.log(response.data);
                 })
                 .catch(function (error) {
                     console.log(error);
@@ -239,7 +272,7 @@ export default defineComponent({
             axios.get('http://127.0.0.1:8000/api/departments?for=selectbox')
                 .then(function (response) {
                     optionsDepartments.value = response.data;
-                    console.log(response.data);
+                    //console.log(response.data);
                 })
                 .catch(function (error) {
                     console.log(error);
@@ -251,7 +284,28 @@ export default defineComponent({
             axios.get('http://127.0.0.1:8000/api/roles?for=selectbox')
                 .then(function (response) {
                     optionsRoles.value = response.data;
-                    console.log(response.data);
+                    //console.log(response.data);
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+        }
+        
+        // Get data from Backend
+        const getUser = (userId) => {
+            userId = route.params.id;
+            axios.get(`http://127.0.0.1:8000/api/${userId}/users`)
+                .then(function (response) {
+                    const u = response.data;
+                    user.username = u.username;
+                    user.name = u.username;
+                    user.email = u.email;
+                    user.department_id = u.department_id;
+                    user.status_id = u.status_id;
+                    user.login_at = u.login_at;
+                    user.change_password_at = u.change_password_at;
+                    //console.log(response.data);
+                    //console.log(user);
                 })
                 .catch(function (error) {
                     console.log(error);
@@ -262,14 +316,20 @@ export default defineComponent({
         getStatuses();
         getDepartments();
         getRoles();
+        getUser();
 
         // Submit form
-        const submitForm = () => {
-            axios.post('http://127.0.0.1:8000/api/users', user)
+        const submitForm = (userId) => {
+            userId = route.params.id;
+            axios.put(`http://127.0.0.1:8000/api/${userId}/users`, user)
                 .then(function (response) {
                     console.log(response);
-                    if(response) message.success('Request successful execution');
-                    router.push({name: 'admin-users'});
+                    if(response.status == 200){
+                        if(response) message.success('Request successful execution');
+                        router.push({name: 'admin-users'});
+                    }else{
+                        message.error('Request execution failed');
+                    }                    
                 })
                 .catch(function (error) {
                     console.log(error);
