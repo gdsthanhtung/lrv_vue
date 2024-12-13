@@ -2,9 +2,11 @@
     <a-card title="User List" style="width: 100%;">
         <div class="row mb-3">
             <div class="col-12 d-flex justify-content-end">
-                <a-button type="primary">
-                    <router-link :to="{ name: 'admin-users-create' }"><PlusOutlined /></router-link>
-                </a-button>
+                <router-link :to="{ name: 'admin-users-create' }">
+                    <a-button type="primary">
+                        <PlusOutlined />
+                    </a-button>
+                </router-link>
             </div>
         </div>
 
@@ -21,8 +23,8 @@
                         </template>
 
                         <template v-if="column.key === 'status'">
-                            <span v-if="record.status.id == 3" class="text-primary">{{ record.status.value }}</span>
-                            <span v-else-if="record.status.id == 4" class="text-danger">{{ record.status.value }}</span>
+                            <a-tag v-if="record.status.id == 3" color="green">{{ record.status.value }}</a-tag>
+                            <a-tag v-if="record.status.id == 4" color="red">{{ record.status.value }}</a-tag>
                         </template>
 
                         <template v-if="column.key === 'action'">

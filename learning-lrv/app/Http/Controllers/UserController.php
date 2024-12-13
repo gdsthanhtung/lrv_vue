@@ -43,10 +43,6 @@ class UserController extends Controller
             'updated_by' => Auth::id() ?? 1,
         ]);
 
-        // $user = $request->except(['password_confirmation']);
-        // $user['password'] = Hash::make(request('password'));
-        // $user['created_by'] = $user['updated_by'] = Auth::id() ?? 1;
-        // $rs = MainModel::create($user);
         return $rs;
     }
 
