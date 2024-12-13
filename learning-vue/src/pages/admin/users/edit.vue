@@ -295,7 +295,7 @@ export default defineComponent({
         // Get data from Backend
         const getUser = (userId) => {
             userId = route.params.id;
-            axios.get(`http://127.0.0.1:8000/api/${userId}/users`)
+            axios.get(`http://127.0.0.1:8000/api/users/${userId}`)
                 .then(function (response) {
                     const u = response.data;
                     user.username = u.username;
@@ -322,9 +322,9 @@ export default defineComponent({
         // Submit form
         const submitForm = (userId) => {
             userId = route.params.id;
-            axios.put(`http://127.0.0.1:8000/api/${userId}/users`, user)
+            axios.put(`http://127.0.0.1:8000/api/users/${userId}`, user)
                 .then(function (response) {
-                    console.log(response);
+                    //console.log(response);
                     if(response.status == 200){
                         if(response) message.success('Request successful execution');
                         router.push({name: 'admin-users'});

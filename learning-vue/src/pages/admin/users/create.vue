@@ -227,7 +227,7 @@ export default defineComponent({
             axios.get('http://127.0.0.1:8000/api/enumerations?for=selectbox&refTable=users')
                 .then(function (response) {
                     optionsStatuses.value = response.data;
-                    console.log(response.data);
+                    //console.log(response.data);
                 })
                 .catch(function (error) {
                     console.log(error);
@@ -239,7 +239,7 @@ export default defineComponent({
             axios.get('http://127.0.0.1:8000/api/departments?for=selectbox')
                 .then(function (response) {
                     optionsDepartments.value = response.data;
-                    console.log(response.data);
+                    //console.log(response.data);
                 })
                 .catch(function (error) {
                     console.log(error);
@@ -251,7 +251,7 @@ export default defineComponent({
             axios.get('http://127.0.0.1:8000/api/roles?for=selectbox')
                 .then(function (response) {
                     optionsRoles.value = response.data;
-                    console.log(response.data);
+                    //console.log(response.data);
                 })
                 .catch(function (error) {
                     console.log(error);
@@ -267,7 +267,7 @@ export default defineComponent({
         const submitForm = () => {
             axios.post('http://127.0.0.1:8000/api/users', user)
                 .then(function (response) {
-                    console.log(response);
+                    //console.log(response);
                     if(response) message.success('Request successful execution');
                     router.push({name: 'admin-users'});
                 })

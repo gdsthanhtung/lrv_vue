@@ -26,27 +26,35 @@
                         </template>
 
                         <template v-if="column.key === 'action'">
-                            <router-link :to="{ name: 'admin-users-edit', params:{id: record.id} }"><EditOutlined /></router-link>
+                            <a-button class="p-1 me-1" type="link">
+                                <router-link :to="{ name: 'admin-users-edit', params:{id: record.id} }"><EditOutlined /></router-link>
+                            </a-button>
+                            <a-button class="p-1" type="link"><span class="text-danger"><DeleteOutlined @click="showModalDeleteUser(record.id)"/></span></a-button>
                         </template>
                     </template>
                 </a-table>
             </div>
         </div>
     </a-card>
+    <a-modal v-model:open="deleteUserModal" title="Delete User Confirmation" ok-text="Yes" cancel-text="No" @ok="hideModal">
+      <p>Are you sure?</p>
+    </a-modal>
 </template>
 
 <script>
-import { defineComponent, ref } from "vue";
+import { defineComponent, ref, createVNode } from "vue";
 import { useMenu } from "../../../stores/use-menu.js";
-import { PlusOutlined, EditOutlined } from '@ant-design/icons-vue';
+import { PlusOutlined, EditOutlined, DeleteOutlined, ExclamationCircleOutlined } from '@ant-design/icons-vue';
+import { message, Modal } from "ant-design-vue";
 
 export default defineComponent({
     components: {
-        PlusOutlined, EditOutlined //icon
+        PlusOutlined, EditOutlined, DeleteOutlined, ExclamationCircleOutlined //icon
     },
     setup() {
         useMenu().onSelectedKeys(['admin-users']);
 
+        // Handle data-table
         const dataSource = ref([]);
         const columns = [
             {
@@ -98,21 +106,53 @@ export default defineComponent({
             }
         ]
 
+        // Execute get list data
         const getData = () => {
             axios.get('http://127.0.0.1:8000/api/users')
                 .then(function (response) {
                     dataSource.value = response.data;
-                    console.log(response.data);
+                    //console.log(response.data);
                 })
                 .catch(function (error) {
                     console.log(error);
                 });
         }
 
+        // Execute delete user
+        const deleteUser = (userId) => {
+            axios.delete(`http://127.0.0.1:8000/api/users/${userId}`)
+                .then(function (response) {
+                    //console.log(response);
+                    if(response.status == 200){
+                        if(response) message.success('Request successful execution');
+                        getData();
+                    }else{
+                        message.error('Request execution failed');
+                    }                    
+                })
+                .catch(function (error) {
+                    console.log(error);
+                    message.error('Request execution failed');
+                });
+        }
+
+        // Handle delete user modal
+        const deleteUserModal = ref(false);
+        const showModalDeleteUser = (userId) => {
+            deleteUserModal.value = true; // Open modal
+            deleteUserModal.userId = userId;
+        };
+        const hideModal = () => {
+            deleteUserModal.value = false; // Close modal
+            deleteUser(deleteUserModal.userId);
+        };
+
+        // Execute functions
         getData();
 
+        // Export data / functions ...
         return {
-            dataSource, columns
+            dataSource, columns, deleteUser, showModalDeleteUser, hideModal, deleteUserModal
         };
     }
 })
