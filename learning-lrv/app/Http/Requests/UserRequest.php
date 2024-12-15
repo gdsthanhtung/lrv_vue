@@ -28,6 +28,8 @@ class UserRequest extends FormRequest
      */
     public function rules(): array
     {
+        return [];
+
         $enumStatus = Enumeration::where('refTable', '=', 'users')->get()->pluck('id')->toArray();
         $departments = Department::where('status_id', '=', '1')->get()->pluck('id')->toArray();
         //$roles = Role::where('status', '=', '1')->get()->pluck('id')->toArray();
@@ -41,6 +43,7 @@ class UserRequest extends FormRequest
                 'department_id' => ['required',Rule::in($departments)],
                 'password'      => ['required','between:6,30','confirmed'],
                 'password_confirmation' => ['required','between:6,30'],
+                'avatar'        => ['required','image','mimes:jpeg,png,jpg,gif,svg','max:2048'],
             ];
         }
 
@@ -53,6 +56,7 @@ class UserRequest extends FormRequest
                 'department_id' => ['required',Rule::in($departments)],
                 'password'      => ($this->change_password) ? ['required','between:6,30','confirmed'] : [],
                 'password_confirmation' => ($this->change_password) ? ['required','between:6,30'] : [],
+                'avatar'        => ['image','mimes:jpeg,png,jpg,gif,svg','max:2048'],
             ];
         }
     }
@@ -95,6 +99,10 @@ class UserRequest extends FormRequest
 
             'department_id.in'          => $invalid,
             'department_id.required'    => $required,
+
+            'avatar.required'   => $required,
+            'avatar.image'      => ':attribute phải là ảnh',
+            'avatar.mimes'      => ':attribute phải có định dạng jpeg, png, jpg, gif, svg',
         ];
     }
 
@@ -113,6 +121,7 @@ class UserRequest extends FormRequest
             'password_confirmation' => 'Xác nhận Mật khẩu',
             'status_id'             => 'Trạng thái',
             'department_id'         => 'Phòng ban',
+            'avatar'                => 'Ảnh đại diện',
         ];
     }
 }

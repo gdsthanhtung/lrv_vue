@@ -7,18 +7,27 @@
                         <div class="col-12 d-flex justify-content-center mb-3">
                             <a-avatar :size="164">
                                 <template #icon>
-                                    <UserOutlined />
+                                    <a-image :src="avatar" alt="User Avatar" width="100%" height="100%" style="border-radius: 50%;" />
                                 </template>
                             </a-avatar>
                         </div>
 
+                        <div v-if="errors.avatar" class="col-12 d-flex justify-content-center mb-3">
+                            <small class="text-danger">* {{ errors.avatar[0] }}</small>
+                        </div>
+
                         <div class="col-12 d-flex justify-content-center">
-                            <a-button type="primary">
-                                <template #icon>
-                                    <UploadOutlined />
-                                </template>
-                                <span>Upload image...</span>
-                            </a-button>
+                            <a-upload 
+                                :file-list="fileList"
+                                :before-upload="beforeUpload"
+                                :custom-request="customRequest"
+                                list-type="picture"
+                                :max-count="1"
+                            >
+                                <a-button>
+                                    Click to Select
+                                </a-button>
+                            </a-upload>
                         </div>
                     </div>
                 </div>
@@ -248,7 +257,8 @@ export default defineComponent({
             role_id: [],
             change_password: false,
             login_at: null,
-            change_password_at: null
+            change_password_at: null,
+            avatar: ""
         });
 
         // Allow filter by uppercase/lowercase in selectbox
@@ -297,19 +307,21 @@ export default defineComponent({
             userId = route.params.id;
             axios.get(`http://127.0.0.1:8000/api/users/${userId}`)
                 .then(function (response) {
-                    const u = response.data;
+                    const u = response.data.data;
                     user.username = u.username;
-                    user.name = u.username;
+                    user.name = u.name;
                     user.email = u.email;
+                    user.avatar = u.avatar_url;
                     user.department_id = u.department_id;
                     user.status_id = u.status_id;
                     user.login_at = (u.login_at != null) ? dayjs(u.login_at).format('DD/MM/YYYY H:m') : null;
                     user.change_password_at = (u.change_password_at != null) ? dayjs(u.change_password_at).format('DD/MM/YYYY H:m') : null;
-                    //console.log(response.data);
+                    console.log(response.data);
                     //console.log(user);
                 })
                 .catch(function (error) {
                     console.log(error);
+                    message.error(error.response.data.message);
                 });
         }
 
@@ -320,14 +332,35 @@ export default defineComponent({
         getUser();
 
         // Submit form
-        const submitForm = (userId) => {
-            userId = route.params.id;
-            axios.put(`http://127.0.0.1:8000/api/users/${userId}`, user)
+        const submitForm = () => {
+            const userId = route.params.id; // Ensure userId is correctly assigned
+            const formData = new FormData();
+            formData.append("_method", "PUT")
+            formData.append('username', user.username);
+            formData.append('name', user.name);
+            formData.append('email', user.email);
+            formData.append('password', user.password);
+            formData.append('password_confirmation', user.password_confirmation);
+            formData.append('status_id', user.status_id);
+            formData.append('department_id', user.department_id);
+            formData.append('change_password', user.change_password);
+            if (selectedFile.value) {
+                formData.append('avatar', selectedFile.value);
+            }
+
+            axios.post(`http://127.0.0.1:8000/api/users/${userId}`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                }
+            })            
                 .then(function (response) {
                     //console.log(response);
                     if(response.status == 200){
                         if(response) message.success('Request successful execution');
-                        router.push({name: 'admin-users'});
+                        const u = response.data.data;
+                        //console.log(u);
+                        user.avatar = u.avatar_url;
+                        //router.push({ name: 'admin-users' });
                     }else{
                         message.error('Request execution failed');
                     }                    
@@ -337,7 +370,24 @@ export default defineComponent({
                     errors.value = error.response.data.errors;
                     message.error('Request execution failed');
                 });
-        }
+        };
+
+        const fileList = ref([]);
+        const selectedFile = ref(null);
+
+        // Handle file selection
+        const customRequest = ({ file, onSuccess }) => {
+            selectedFile.value = file;
+            onSuccess(null, file);
+        };  
+
+        const beforeUpload = file => {
+            const isLt3M = file.size / 1024 / 1024 < 3;
+            if (!isLt3M) {
+                message.error('File must be smaller than 3MB!');
+            }
+            return isLt3M;
+        };
 
         // Return data
         return {
@@ -347,7 +397,10 @@ export default defineComponent({
             filterOption,
             submitForm,
             ...toRefs(user),
-            errors
+            errors,
+            fileList,
+            selectedFile,
+            beforeUpload, customRequest
         };
     }
 })

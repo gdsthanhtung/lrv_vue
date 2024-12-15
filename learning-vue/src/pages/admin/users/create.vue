@@ -12,15 +12,20 @@
                             </a-avatar>
                         </div>
 
-                        <div class="col-12 d-flex justify-content-center">
-                            <a-upload :file-list="fileList" :headers="headers" :action="uploadUrl"
-                                @change="handleChange" :before-upload="beforeUpload">
+                        <div v-if="errors.avatar" class="col-12 d-flex justify-content-center mb-3">
+                            <small class="text-danger">* {{ errors.avatar[0] }}</small>
+                        </div>
 
-                                <a-button type="primary">
-                                    <template #icon>
-                                        <UploadOutlined />
-                                    </template>
-                                    <span>Upload image...</span>
+                        <div class="col-12 d-flex justify-content-center">
+                            <a-upload 
+                                :file-list="fileList"
+                                :before-upload="beforeUpload"
+                                :custom-request="customRequest"
+                                list-type="picture"
+                                :max-count="1"
+                            >
+                                <a-button>
+                                    Click to Select
                                 </a-button>
                             </a-upload>
                         </div>
@@ -186,6 +191,7 @@ export default defineComponent({
 
         // Default value of inputs
         const user = reactive({
+            avatar: "",
             username: "",
             name: "",
             email: "",
@@ -246,32 +252,43 @@ export default defineComponent({
 
         // Submit form
         const submitForm = () => {
-            axios.post('http://127.0.0.1:8000/api/users', user)
-                .then(function (response) {
-                    //console.log(response);
-                    if (response) message.success('Request successful execution');
-                    router.push({ name: 'admin-users' });
-                })
-                .catch(function (error) {
-                    console.log(error);
-                    errors.value = error.response.data.errors;
-                    message.error('Request execution failed');
-                });
-        }
-
-        // Handle upload file
-        const fileList = ref([]);
-        const headers = {
-            authorization: 'authorization-text',
-        };
-        const uploadUrl = 'http://127.0.0.1:8000/api/upload?module_name=users&field_name=avatar';
-        const handleChange = info => {
-            if (info.file.status === 'done') {
-                message.success(`${info.file.name} file uploaded successfully`);
-            } else if (info.file.status === 'error') {
-                message.error(`${info.file.name} file upload failed.`);
+            const formData = new FormData();
+            formData.append('username', user.username);
+            formData.append('name', user.name);
+            formData.append('email', user.email);
+            formData.append('password', user.password);
+            formData.append('password_confirmation', user.password_confirmation);
+            formData.append('status_id', user.status_id);
+            formData.append('department_id', user.department_id);
+            if (selectedFile.value) {
+                formData.append('avatar', selectedFile.value);
             }
+
+            axios.post('http://127.0.0.1:8000/api/users', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            })
+            .then(function (response) {
+                //console.log(response);
+                if (response) message.success('Request successful execution');
+                router.push({ name: 'admin-users' });
+            })
+            .catch(function (error) {
+                console.log(error);
+                errors.value = error.response.data.errors;
+                message.error('Request execution failed');
+            });
         };
+
+        const fileList = ref([]);
+        const selectedFile = ref(null);
+
+        // Handle file selection
+        const customRequest = ({ file, onSuccess }) => {
+            selectedFile.value = file;
+            onSuccess(null, file);
+        };  
 
         const beforeUpload = file => {
             const isLt3M = file.size / 1024 / 1024 < 3;
@@ -290,7 +307,9 @@ export default defineComponent({
             submitForm,
             ...toRefs(user),
             errors,
-            handleChange, fileList, headers, uploadUrl, beforeUpload
+            fileList,
+            selectedFile,
+            beforeUpload, customRequest
         };
     }
 })

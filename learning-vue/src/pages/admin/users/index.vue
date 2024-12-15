@@ -19,7 +19,7 @@
                         </template>
 
                         <template v-if="column.key === 'avatar'">
-                            <a-image :src="`http://localhost:5173/public/images/user/default/user-avatar.jpg`" :preview="false" :height="50" :width="50" class="rounded-circle" />
+                            <a-image :src="record.avatar" :preview="false" :height="50" :width="50" class="rounded-circle" />
                         </template>
 
                         <template v-if="column.key === 'status'">
